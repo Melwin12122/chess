@@ -21,7 +21,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONUP and not board.check:
+            if event.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
                 col = pos[0] // CELL_SIZE
                 row = pos[1] // CELL_SIZE

@@ -108,8 +108,6 @@ class Board:
         return False
 
     def change_pos(self, r1, c1, r2, c2):
-        # self.board[r1][c1].move_list = list()
-        # self.board[r1][c1].possible_move = list()
         if self.board[r2][c2] != 0:
             self.board[r2][c2].move_list = list()
             self.board[r2][c2].possible_move = list()

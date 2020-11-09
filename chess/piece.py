@@ -113,20 +113,11 @@ class Piece:
                     c_incr += c_incr
         return moves
 
-class Rook(Piece):
-    def __init__(self, row, col, colour):
-        super().__init__(row, col, colour)
-        self.img = pygame.transform.scale(pygame.image.load(os.path.join("imgs" , colour + "R.png")), (CELL_SIZE, CELL_SIZE))
-
-    def valid_moves(self, board):
+    def move_straight(self, board, moves, temp, temp2):
         r = self.row
         c = self.col
-
-        moves = []
-        temp = []
-        temp2 = []
         beyond = False
-        # Up
+        # Up 
         while r > 0:
             r -= 1
             if not beyond:
@@ -213,126 +204,7 @@ class Rook(Piece):
                     temp.append((r, c))
                     break
 
-        temp3 = self.check_moves(moves)
-
-        value, pos = self.cause_check()
-        
-        if value:
-            if pos in moves:
-                moves = []
-                moves.append(pos)
-            else:
-                moves = [] 
-
-        if (Piece.w_check and self.colour == 'w') or (Piece.b_check and self.colour == 'b'):
-            self.move_list = temp3
-        else:
-            self.move_list = moves
-
-        self.possible_move = temp
-        self.saving_move = temp2
-        
-
-class Queen(Piece):
-    def __init__(self, row, col, colour):
-        super().__init__(row, col, colour)
-        self.img = pygame.transform.scale(pygame.image.load(os.path.join("imgs" , colour + "Q.png")), (CELL_SIZE, CELL_SIZE))
-
-    def valid_moves(self, board):
-        r = self.row
-        c = self.col
-
-        moves = []
-        temp = []
-        temp2 = []
-        beyond = False
-        # Up
-        while r > 0:
-            r -= 1
-            if not beyond:
-                if board[r][c] == 0:
-                    moves.append((r, c))
-                elif board[r][c].colour == self.colour:
-                    temp2.append((r, c))
-                    temp.append((r, c))
-                    break
-                elif board[r][c].colour != self.colour:
-                    moves.append((r, c))
-                    beyond = True
-            else:
-                if board[r][c] == 0:
-                    temp.append((r, c))
-                else:
-                    temp.append((r, c))
-                    break
-        
-        r = self.row
-        beyond = False
-        # Down
-        while r < 7:
-            r += 1
-            if not beyond:
-                if board[r][c] == 0:
-                    moves.append((r, c))
-                elif board[r][c].colour == self.colour:
-                    temp.append((r, c))
-                    temp2.append((r, c))
-                    break
-                elif board[r][c].colour != self.colour:
-                    moves.append((r, c))
-                    beyond = True
-            else:
-                if board[r][c] == 0:
-                    temp.append((r, c))
-                else:
-                    temp.append((r, c))
-                    break
-
-        r = self.row
-        c = self.col
-        beyond = False
-        # Left
-        while c > 0:
-            c -= 1
-            if not beyond:
-                if board[r][c] == 0:
-                    moves.append((r, c))
-                elif board[r][c].colour == self.colour:
-                    temp.append((r, c))
-                    temp2.append((r, c))
-                    break
-                elif board[r][c].colour != self.colour:
-                    moves.append((r, c))
-                    beyond = True
-            else:
-                if board[r][c] == 0:
-                    temp.append((r, c))
-                else:
-                    temp.append((r, c))
-                    break
-        
-        c = self.col
-        beyond = False
-        # Right
-        while c < 7:
-            c += 1
-            if not beyond:
-                if board[r][c] == 0:
-                    moves.append((r, c))
-                elif board[r][c].colour == self.colour:
-                    temp.append((r, c))
-                    temp2.append((r, c))
-                    break
-                elif board[r][c].colour != self.colour:
-                    moves.append((r, c))
-                    beyond = True
-            else:
-                if board[r][c] == 0:
-                    temp.append((r, c))
-                else:
-                    temp.append((r, c))
-                    break
-        
+    def move_diagonal(self, board, moves, temp, temp2):
         r = self.row
         lc = self.col # left column
         rc = self.col # right column
@@ -429,6 +301,51 @@ class Queen(Piece):
                     rc = 8
                     Rbeyond = False
 
+class Rook(Piece):
+    def __init__(self, row, col, colour):
+        super().__init__(row, col, colour)
+        self.img = pygame.transform.scale(pygame.image.load(os.path.join("imgs" , colour + "R.png")), (CELL_SIZE, CELL_SIZE))
+
+    def valid_moves(self, board):
+
+        moves = []
+        temp = []
+        temp2 = []
+        
+        self.move_straight(board ,moves, temp, temp2)
+
+        temp3 = self.check_moves(moves)
+
+        value, pos = self.cause_check()
+        
+        if value:
+            if pos in moves:
+                moves = []
+                moves.append(pos)
+            else:
+                moves = [] 
+
+        if (Piece.w_check and self.colour == 'w') or (Piece.b_check and self.colour == 'b'):
+            self.move_list = temp3
+        else:
+            self.move_list = moves
+
+        self.possible_move = temp
+        self.saving_move = temp2
+        
+
+class Queen(Piece):
+    def __init__(self, row, col, colour):
+        super().__init__(row, col, colour)
+        self.img = pygame.transform.scale(pygame.image.load(os.path.join("imgs" , colour + "Q.png")), (CELL_SIZE, CELL_SIZE))
+
+    def valid_moves(self, board):
+        moves = []
+        temp = []
+        temp2 = []
+        
+        self.move_straight(board, moves, temp, temp2)
+        self.move_diagonal(board, moves, temp, temp2)
         
         temp3 = self.check_moves(moves)
                                 
@@ -665,104 +582,8 @@ class Bishop(Piece):
         temp = []
         temp2 = []
 
-        r = self.row
-        lc = self.col # left column
-        rc = self.col # right column
-        Lbeyond = False
-        Rbeyond = False
+        self.move_diagonal(board, moves, temp, temp2)
 
-        # Diagonal Up
-        while r > 0:
-            r -= 1
-
-            lc -= 1
-            if lc >= 0 and not Lbeyond:
-                if board[r][lc] == 0:
-                    moves.append((r, lc))
-                elif board[r][lc].colour == self.colour:
-                    temp.append((r, lc))
-                    temp2.append((r, lc))
-                    lc = -1 # Stop running this block
-                elif board[r][lc].colour != self.colour:
-                    moves.append((r, lc))
-                    Lbeyond = True
-            elif lc >= 0 and Lbeyond:
-                if board[r][lc] == 0:
-                    temp.append((r, lc))
-                else:
-                    temp.append((r, lc))
-                    lc = -1
-                    Lbeyond = False
-        
-            rc += 1
-            if rc <= 7 and not Rbeyond:
-                if board[r][rc] == 0:
-                    moves.append((r, rc))
-                elif board[r][rc].colour == self.colour:
-                    temp.append((r, rc))
-                    temp2.append((r, rc))
-                    rc = 8 # Stop running this block  
-                elif board[r][rc].colour != self.colour:
-                    moves.append((r, rc))
-                    Rbeyond = True
-            elif rc <= 7 and Rbeyond:
-                if board[r][rc] == 0:
-                    temp.append((r, rc))
-                else:
-                    temp.append((r, rc))
-                    rc = 8
-                    Rbeyond = False
-            
-
-        r = self.row
-        lc = self.col # left column
-        rc = self.col # right column
-        Lbeyond = False
-        Rbeyond = False
-
-        # Diagonal Down
-        while r < 7:
-            r += 1
-
-            lc -= 1
-            if lc >= 0 and not Lbeyond:
-                if board[r][lc] == 0:
-                    moves.append((r, lc))
-                elif board[r][lc].colour == self.colour:
-                    temp.append((r, lc))
-                    temp2.append((r, lc))
-                    lc = -1 # Stop running this block
-                elif board[r][lc].colour != self.colour:
-                    moves.append((r, lc))
-                    Lbeyond = True
-            elif lc >= 0 and Lbeyond:
-                if board[r][lc] == 0:
-                    temp.append((r, lc))
-                else:
-                    temp.append((r, lc))
-                    lc = -1
-                    Lbeyond = False
-
-            rc += 1
-            if rc <= 7 and not Rbeyond:
-                if board[r][rc] == 0:
-                    moves.append((r, rc))
-                elif board[r][rc].colour == self.colour:
-                    temp.append((r, rc))
-                    temp2.append((r, rc))
-                    rc = 8 # Stop running this block
-                elif board[r][rc].colour != self.colour:
-                    moves.append((r, rc))
-                    Rbeyond = True
-            elif rc <= 7 and not  Rbeyond:
-                if board[r][rc] == 0:
-                    temp.append((r, rc))
-                else:
-                    temp.append((r, rc))
-                    rc = 8
-                    Rbeyond = False
-        
-        
         temp3 = self.check_moves(moves)
 
         value, pos = self.cause_check()
