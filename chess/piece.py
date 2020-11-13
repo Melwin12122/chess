@@ -532,10 +532,10 @@ class King(Piece):
                     if (r, c) == (bp.row+1, bp.col):
                         return True
                 
-                if (r, c) in bp.move_list:
+                pos = self.find_pos(bp, (r, c))
+                if (self.row, self.col) in pos:
                     return False
-                '''if Piece.w_check and (r, c) in bp.possible_move and (self.row, self.col) in bp.move_list:
-                    return False'''
+        
                 if Piece.w_check and (r, c) in bp.move_list:
                     return False
                 if (r, c) == (bp.row, bp.col):
@@ -555,10 +555,10 @@ class King(Piece):
                     if (r, c) == (wp.row-1, wp.col):
                         return True
 
-                if (r, c) in wp.move_list:
-                    return False       
-                '''if Piece.b_check and (r, c) in wp.possible_move and (self.row, self.col) in wp.move_list:
-                    return False'''
+                pos = self.find_pos(wp, (r, c))
+                if (self.row, self.col) in pos:
+                    return False
+
                 if Piece.b_check and (r, c) in wp.move_list:
                     return False 
                 if (r, c) == (wp.row, wp.col):
@@ -566,6 +566,33 @@ class King(Piece):
                         if (r, c) in wp2.saving_move:
                             return False
         return True
+
+    def find_pos(self, one, other):
+        moves = []
+        row = other[0]
+        col = other[1]
+        if one.row == row:
+            incr = -1 if col > one.col else 1
+            for i in range(col+incr, one.col, incr):
+                moves.append((one.row, i))
+        elif one.col == col:
+            incr = -1 if row > one.row else 1
+            for i in range(row+incr, one.row, incr):
+                moves.append((i, one.col))
+        elif abs(one.row - row) == abs(one.col - col):
+            r_incr = -1 if row > one.row else 1
+            c_incr = -1 if col > one.col else 1
+            if col < one.col:
+                for i in range(col+1, one.col):
+                    moves.append((row+r_incr, col+c_incr))
+                    r_incr += r_incr
+                    c_incr += c_incr
+            elif col > one.col:
+                for i in range(one.col+1, col):
+                    moves.append((row+r_incr, col+c_incr))
+                    r_incr += r_incr
+                    c_incr += c_incr
+        return moves
 
         
 class Knight(Piece):

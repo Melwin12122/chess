@@ -155,7 +155,6 @@ class Board:
                             self.board[row][col] = Knight(row, col, 'w')
                         elif self.pawn_promo == 'bishop':
                             self.board[row][col] = Bishop(row, col, 'w')
-                        self.board[row][col].white_pieces.append(self.board[row][col])
                     elif self.board[r][c].colour == 'b':
                         self.board[r][c].black_pieces.remove(self.board[r][c])
                         self.board[r][c] = 0
@@ -167,7 +166,6 @@ class Board:
                             self.board[row][col] = Knight(row, col, 'b')
                         elif self.pawn_promo == 'bishop':
                             self.board[row][col] = Bishop(row, col, 'b')
-                        self.board[row][col].black_pieces.append(self.board[row][col])
                 
                     self.turn = 'w' if self.turn == 'b' else 'b'
                     self.selected = []
@@ -199,15 +197,9 @@ class Board:
 
         if self.board[r2][c2] != 0:
             if self.board[r2][c2].colour == 'w':
-                for wp in self.board[r2][c2].white_pieces:
-                    if wp is self.board[r2][c2]:
-                        self.board[r2][c2].white_pieces.remove(wp)
-                        break
+                self.board[r2][c2].white_pieces.remove(self.board[r2][c2])
             elif self.board[r2][c2].colour == 'b':
-                for bp in self.board[r2][c2].black_pieces:
-                    if bp is self.board[r2][c2]:
-                        self.board[r2][c2].black_pieces.remove(bp)
-                        break
+                self.board[r2][c2].black_pieces.remove(self.board[r2][c2])        
                     
         self.board[r2][c2] = self.board[r1][c1]
         self.board[r1][c1] = 0
