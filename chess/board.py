@@ -1,5 +1,5 @@
 import pygame
-from .constants import ROWS, COLS, CELL_SIZE, BLACK, WHITE, BROWN, RED, YELLOW, BLUE
+from .constants import ROWS, COLS, CELL_SIZE, BLACK, WHITE, BROWN, RED, YELLOW, BLUE, PURPLE
 from .piece import Rook, King, Queen, Bishop, Pawn, Knight
 
 class Board:
@@ -63,6 +63,9 @@ class Board:
                 pygame.draw.rect(win, YELLOW, (CELL_SIZE * c, CELL_SIZE * r, CELL_SIZE, CELL_SIZE))
                 if self.board[r][c] != 0: # Opposition piece
                     pygame.draw.rect(win, RED, (CELL_SIZE * c, CELL_SIZE * r, CELL_SIZE, CELL_SIZE))
+            if self.board[row][col].king:
+                for r, c in self.board[row][col].specialmoves:
+                    pygame.draw.rect(win, PURPLE, (CELL_SIZE * c, CELL_SIZE * r, CELL_SIZE, CELL_SIZE))
 
         for row in range(ROWS):
             for col in range(COLS):
@@ -83,23 +86,56 @@ class Board:
             if self.selected == [] and self.occupied(row, col):
                 if (self.turn == 'w' and self.board[row][col].colour == 'w') or (self.turn == 'b' and self.board[row][col].colour == 'b'):
                     self.selected.append((row, col))
-                    self.board[row][col].selected = True
+            elif len(self.selected) == 1 and (row, col) == self.selected[0]:
+                self.selected = []
             elif len(self.selected) == 1 and (row, col) in self.board[self.selected[0][0]][self.selected[0][1]].move_list:
                 self.selected.append((row, col))
                 r1, c1 = self.selected[0][0], self.selected[0][1]
                 r2, c2 = self.selected[1][0], self.selected[1][1]
                 self.change_pos(r1, c1, r2, c2)
                 self.selected = []
-            elif len(self.selected) == 1 and (row, col) == self.selected[0]:
-                self.selected = []
+            elif len(self.selected) == 1 and self.board[self.selected[0][0]][self.selected[0][1]].king:
+                r = self.selected[0][0]
+                c = self.selected[0][1]
+                if (row, col) in self.board[r][c].specialmoves:
+                    if col > c:
+                        if self.board[r][c].colour == 'w':
+                            self.board[7][6] = self.board[7][4]
+                            self.board[7][5] = self.board[7][7]
+                            self.board[7][4] = self.board[7][7] = 0
+                            self.board[7][6].col = 6
+                            self.board[7][5].col = 5
+                            self.board[7][6].castled = True
+                        elif self.board[r][c].colour == 'b':
+                            self.board[0][6] = self.board[0][4]
+                            self.board[0][5] = self.board[0][7]
+                            self.board[0][4] = self.board[0][7] = 0
+                            self.board[0][6].col = 6
+                            self.board[0][5].col = 5
+                            self.board[0][6].castled = True
+                    elif col < c:
+                        if self.board[r][c].colour == 'w':
+                            self.board[7][2] = self.board[7][4]
+                            self.board[7][3] = self.board[7][0]
+                            self.board[7][4] = self.board[7][0] = 0
+                            self.board[7][2].col = 2
+                            self.board[7][3].col = 3
+                            self.board[7][2].castled = True
+                        elif self.board[r][c].colour == 'b':
+                            self.board[0][2] = self.board[0][4]
+                            self.board[0][3] = self.board[0][0]
+                            self.board[0][4] = self.board[0][0] = 0
+                            self.board[0][2].col = 2
+                            self.board[0][3].col = 3
+                            self.board[0][2].castled = True
+                    self.turn = 'w' if self.turn == 'b' else 'b'
+                    self.selected = []
             elif len(self.selected) == 1 and not self.occupied(row, col):
                 pass
             elif len(self.selected) == 1 and self.occupied(row, col):
                 if (self.turn == 'w' and self.board[row][col].colour == 'w') or (self.turn == 'b' and self.board[row][col].colour == 'b'):
                     self.selected[0] = (row, col)
-            elif self.board[row][col].selected:
-                self.board[row][col].selected = False
-                self.selected = []
+
 
             
     def occupied(self, row, col):

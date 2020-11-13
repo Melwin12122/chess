@@ -18,11 +18,11 @@ class Piece:
         self.row = row
         self.col = col
         self.colour = colour
-        self.selected = False
         self.img = None
         self.king = False
         self.pawn = False
         self.knight = False
+        self.rook = True
         self.move_list = [] # Moves which could be moved
         self.possible_move = [] # Moves beyond opponent piece
         self.saving_move = [] # Moves which could backup a same piece
@@ -31,33 +31,11 @@ class Piece:
         elif self.colour == 'b':
             Piece.black_pieces.append(self)
 
-    def isSelected(self):
-        return self.selected
-
     def draw(self, win):
         x = self.col * CELL_SIZE
         y = self.row * CELL_SIZE
 
         win.blit(self.img, (x, y))
-
-    '''def cause_check(self):
-        if self.colour == 'w':
-            for bp in Piece.black_pieces:
-                if (self.row, self.col) in bp.move_list:
-                    for wp in Piece.white_pieces:
-                        if wp.king and (wp.row, wp.col) in bp.move_list:
-                            return False , ()
-                        elif wp.king and (wp.row, wp.col) in bp.possible_move:
-                            return True, (bp.row, bp.col)
-        elif self.colour == 'b':
-            for wp in Piece.white_pieces:
-                if (self.row, self.col) in wp.move_list:
-                    for bp in Piece.black_pieces:
-                        if bp.king and (bp.row, bp.col) in wp.move_list:
-                            return False, ()
-                        elif bp.king and (bp.row, bp.col) in wp.possible_move:
-                            return True , (wp.row, wp.col)
-        return False, ()'''
 
     def cause_check(self, moves):
         temp2 = []
@@ -74,8 +52,7 @@ class Piece:
                                     if move in moves:
                                         temp2.append(move)
                                 return True, temp2
-                            else:
-                                return False, ()
+            
         elif self.colour == 'b':
             for bp in Piece.black_pieces:
                 if bp.king:
@@ -89,8 +66,7 @@ class Piece:
                                     if move in moves:
                                         temp2.append(move)
                                 return True, temp2
-                            else:
-                                return False, ()
+
         return False, ()
 
     def check_moves(self, moves):
@@ -338,6 +314,7 @@ class Piece:
 class Rook(Piece):
     def __init__(self, row, col, colour):
         super().__init__(row, col, colour)
+        self.rook = True
         self.img = pygame.transform.scale(pygame.image.load(os.path.join("imgs" , colour + "R.png")), (CELL_SIZE, CELL_SIZE))
 
     def valid_moves(self, board):
@@ -396,6 +373,8 @@ class King(Piece):
     def __init__(self, row, col, colour):
         super().__init__(row, col, colour)
         self.king = True
+        self.castled = False
+        self.specialmoves = []
         self.img = pygame.transform.scale(pygame.image.load(os.path.join("imgs" , colour + "K.png")), (CELL_SIZE, CELL_SIZE))
 
     def valid_moves(self, board):
@@ -403,6 +382,7 @@ class King(Piece):
         c = self.col 
         moves = []
         temp = []
+        temp2 = []
 
         if r >= 1 and c >= 1 and (board[r-1][c-1] == 0 or board[r-1][c-1].colour != self.colour):
             if self.king_pos(r-1, c-1, board):
@@ -452,7 +432,54 @@ class King(Piece):
                 moves.append((r+1, c+1))
             else:
                 temp.append((r+1, c+1))
-        
+
+        if self.colour == 'w' and (self.row, self.col) == (7, 4) and not self.castled:
+            for wp in Piece.white_pieces:
+                if wp.rook:
+                    if (wp.row, wp.col) == (7, 7):
+                        for i in range(5, 7):
+                            if board[7][i] != 0:
+                                break
+                        else:
+                            for bp in Piece.black_pieces:
+                                if (7, 6) in bp.move_list:
+                                    break
+                            else:
+                                temp2.append((7, 6))
+                    if (wp.row, wp.col) == (7, 0):
+                        for i in range(1, 4):
+                            if board[7][i] != 0:
+                                break
+                        else:
+                            for bp in Piece.black_pieces:
+                                if (7, 2) in bp.move_list:
+                                    break
+                            else:
+                                temp2.append((7, 2))
+        elif self.colour == 'b' and (self.row, self.col) == (0, 4) and not self.castled:
+            for wp in Piece.white_pieces:
+                if wp.rook:
+                    if (wp.row, wp.col) == (0, 7):
+                        for i in range(5, 7):
+                            if board[0][i] != 0:
+                                break
+                        else:
+                            for wp in Piece.white_pieces:
+                                if (0, 6) in wp.move_list:
+                                    break
+                            else:
+                                temp2.append((0, 6))
+                    if (wp.row, wp.col) == (0, 0):
+                        for i in range(1, 4):
+                            if board[0][i] != 0:
+                                break
+                        else:
+                            for wp in Piece.white_pieces:
+                                if (0, 2) in wp.move_list:
+                                    break
+                            else:
+                                temp2.append((0, 2))
+
         if self.colour == 'b':
             for wp in Piece.white_pieces:
                 if (self.row, self.col) in wp.move_list:
@@ -490,6 +517,7 @@ class King(Piece):
 
         self.move_list = moves
         self.possible_move = temp
+        self.specialmoves = temp2
 
     def king_pos(self, r, c, board):
         if self.colour == 'w':
@@ -497,13 +525,18 @@ class King(Piece):
                 if bp.king:
                     if r in range(bp.row-1, bp.row+2):
                         if c in range(bp.col-1, bp.col+2):
-                            return False 
-                if (r, c) in bp.move_list:
-                    return False
+                            return False      
                 if bp.pawn:
                     if (r, c) in ((bp.row+1, bp.col-1), (bp.row+1, bp.col+1)):
-                            return False
-                if Piece.w_check and (r, c) in bp.possible_move and (self.row, self.col) in bp.move_list:
+                        return False
+                    if (r, c) == (bp.row+1, bp.col):
+                        return True
+                
+                if (r, c) in bp.move_list:
+                    return False
+                '''if Piece.w_check and (r, c) in bp.possible_move and (self.row, self.col) in bp.move_list:
+                    return False'''
+                if Piece.w_check and (r, c) in bp.move_list:
                     return False
                 if (r, c) == (bp.row, bp.col):
                     for bp2 in Piece.black_pieces:
@@ -516,12 +549,17 @@ class King(Piece):
                     if r in range(wp.row-1, wp.row+2):
                         if c in range(wp.col-1, wp.col+2):
                             return False 
-                if (r, c) in wp.move_list:
-                    return False       
                 if wp.pawn:
                     if (r, c) in ((wp.row-1, wp.col-1), (wp.row-1, wp.col+1)):
-                            return False
-                if Piece.b_check and (r, c) in wp.possible_move and (self.row, self.col) in wp.move_list:
+                        return False
+                    if (r, c) == (wp.row-1, wp.col):
+                        return True
+
+                if (r, c) in wp.move_list:
+                    return False       
+                '''if Piece.b_check and (r, c) in wp.possible_move and (self.row, self.col) in wp.move_list:
+                    return False'''
+                if Piece.b_check and (r, c) in wp.move_list:
                     return False 
                 if (r, c) == (wp.row, wp.col):
                     for wp2 in Piece.white_pieces:
@@ -638,6 +676,7 @@ class Pawn(Piece):
         super().__init__(row, col, colour)
         self.first_move = True
         self.pawn = True
+        self.specialmoves = []
         self.img = pygame.transform.scale(pygame.image.load(os.path.join("imgs" , colour + "P.png")), (CELL_SIZE, CELL_SIZE))
 
 
@@ -663,7 +702,7 @@ class Pawn(Piece):
                     temp2.append((r-1, c+1))
                 
             else:
-                if board[r-1][c] == 0:
+                if r>= 1 and board[r-1][c] == 0:
                     moves.append((r-1, c))
                 if r >= 1 and c >= 1 and board[r-1][c-1] != 0 and board[r-1][c-1].colour != self.colour:
                     moves.append((r-1, c-1))
@@ -689,7 +728,7 @@ class Pawn(Piece):
                 if c<= 6 and board[r+1][c+1] != 0 and board[r+1][c+1].colour == self.colour:
                     temp2.append((r+1, c+1))
             else:
-                if board[r+1][c] == 0:
+                if  r <= 6 and board[r+1][c] == 0:
                     moves.append((r+1, c))
                 if r <= 6 and c >= 1 and board[r+1][c-1] != 0 and board[r+1][c-1].colour != self.colour:
                     moves.append((r+1, c-1))
