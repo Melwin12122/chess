@@ -171,7 +171,7 @@ class Board:
                     self.selected = []
             elif len(self.selected) == 1 and not self.occupied(row, col):
                 pass
-            elif len(self.selected) == 1 and self.occupied(row, col):
+            if len(self.selected) == 1 and self.occupied(row, col):
                 if (self.turn == 'w' and self.board[row][col].colour == 'w') or (self.turn == 'b' and self.board[row][col].colour == 'b'):
                     self.selected[0] = (row, col)
 

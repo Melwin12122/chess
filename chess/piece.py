@@ -22,7 +22,8 @@ class Piece:
         self.king = False
         self.pawn = False
         self.knight = False
-        self.rook = True
+        self.rook = False
+        self.bishop = False
         self.move_list = [] # Moves which could be moved
         self.possible_move = [] # Moves beyond opponent piece
         self.saving_move = [] # Moves which could backup a same piece
@@ -109,18 +110,18 @@ class Piece:
             for i in range(other.row+incr, one.row, incr):
                 moves.append((i, one.col))
         elif abs(one.row - other.row) == abs(one.col - other.col):
-            r_incr = -1 if other.row > one.row else 1
-            c_incr = -1 if other.col > one.col else 1
+            r = r_incr = -1 if other.row > one.row else 1
+            c = c_incr = -1 if other.col > one.col else 1
             if other.col < one.col:
                 for i in range(other.col+1, one.col):
                     moves.append((other.row+r_incr, other.col+c_incr))
-                    r_incr += r_incr
-                    c_incr += c_incr
+                    r_incr += r
+                    c_incr += c
             elif other.col > one.col:
                 for i in range(one.col+1, other.col):
                     moves.append((other.row+r_incr, other.col+c_incr))
-                    r_incr += r_incr
-                    c_incr += c_incr
+                    r_incr += r
+                    c_incr += c
         return moves
 
     def move_straight(self, board, moves, temp, temp2):
@@ -580,18 +581,18 @@ class King(Piece):
             for i in range(row+incr, one.row, incr):
                 moves.append((i, one.col))
         elif abs(one.row - row) == abs(one.col - col):
-            r_incr = -1 if row > one.row else 1
-            c_incr = -1 if col > one.col else 1
+            r= r_incr = -1 if row > one.row else 1
+            c= c_incr = -1 if col > one.col else 1
             if col < one.col:
                 for i in range(col+1, one.col):
                     moves.append((row+r_incr, col+c_incr))
-                    r_incr += r_incr
-                    c_incr += c_incr
+                    r_incr += r
+                    c_incr += c
             elif col > one.col:
                 for i in range(one.col+1, col):
                     moves.append((row+r_incr, col+c_incr))
-                    r_incr += r_incr
-                    c_incr += c_incr
+                    r_incr += r
+                    c_incr += c
         return moves
 
         
@@ -673,6 +674,7 @@ class Knight(Piece):
 class Bishop(Piece):
     def __init__(self, row, col, colour):
         super().__init__(row, col, colour)
+        self.bishop = True
         self.img = pygame.transform.scale(pygame.image.load(os.path.join("imgs" , colour + "B.png")), (CELL_SIZE, CELL_SIZE))
 
     def valid_moves(self, board):
