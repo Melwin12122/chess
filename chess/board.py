@@ -113,10 +113,25 @@ class Board:
             self.board[r2][c2].possible_move = list()
             self.board[r2][c2].row = None
             self.board[r2][c2].col = None
+
         if self.board[r1][c1].pawn:
             self.board[r1][c1].first_move = False
+
         self.board[r1][c1].row = r2
         self.board[r1][c1].col = c2
+
+        if self.board[r2][c2] != 0:
+            if self.board[r2][c2].colour == 'w':
+                for wp in self.board[r2][c2].white_pieces:
+                    if wp is self.board[r2][c2]:
+                        self.board[r2][c2].white_pieces.remove(wp)
+                        break
+            elif self.board[r2][c2].colour == 'b':
+                for bp in self.board[r2][c2].black_pieces:
+                    if bp is self.board[r2][c2]:
+                        self.board[r2][c2].black_pieces.remove(bp)
+                        break
+                    
         self.board[r2][c2] = self.board[r1][c1]
         self.board[r1][c1] = 0
         self.turn = 'w' if self.turn == 'b' else 'b'
