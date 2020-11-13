@@ -1,6 +1,7 @@
 import pygame
 from .constants import ROWS, COLS, CELL_SIZE, BLACK, WHITE, BROWN, RED, YELLOW, BLUE, PURPLE
 from .piece import Rook, King, Queen, Bishop, Pawn, Knight
+from tkinter import *
 
 class Board:
     
@@ -44,6 +45,7 @@ class Board:
         self.board[6][5] = Pawn(6, 5, "w")
         self.board[6][6] = Pawn(6, 6, "w")
         self.board[6][7] = Pawn(6, 7, "w")
+        self.pawn_promo = None
 
 
     def draw(self, win):
@@ -63,7 +65,7 @@ class Board:
                 pygame.draw.rect(win, YELLOW, (CELL_SIZE * c, CELL_SIZE * r, CELL_SIZE, CELL_SIZE))
                 if self.board[r][c] != 0: # Opposition piece
                     pygame.draw.rect(win, RED, (CELL_SIZE * c, CELL_SIZE * r, CELL_SIZE, CELL_SIZE))
-            if self.board[row][col].king:
+            if self.board[row][col].king or self.board[row][col].pawn:
                 for r, c in self.board[row][col].specialmoves:
                     pygame.draw.rect(win, PURPLE, (CELL_SIZE * c, CELL_SIZE * r, CELL_SIZE, CELL_SIZE))
 
@@ -130,6 +132,45 @@ class Board:
                             self.board[0][2].castled = True
                     self.turn = 'w' if self.turn == 'b' else 'b'
                     self.selected = []
+            elif len(self.selected) == 1 and self.board[self.selected[0][0]][self.selected[0][1]].pawn:
+                r = self.selected[0][0]
+                c = self.selected[0][1]
+                if (row, col) in self.board[r][c].specialmoves:
+                    self.board[r][c].row = self.board[r][c].col = None
+                    self.popup()
+                    if self.board[row][col] != 0:
+                        self.board[row][col].row = self.board[row][col].col = None
+                        if self.board[row][col].colour == 'b':
+                            self.board[r][c].black_pieces.remove(self.board[row][col])
+                        elif self.board[row][col].colour == 'w':
+                            self.board[r][c].white_pieces.remove(self.board[row][col])
+                    if self.board[r][c].colour == 'w':
+                        self.board[r][c].white_pieces.remove(self.board[r][c])
+                        self.board[r][c] = 0
+                        if self.pawn_promo == 'queen' or self.pawn_promo is None:
+                            self.board[row][col] = Queen(row, col, 'w')
+                        elif self.pawn_promo == 'rook':
+                            self.board[row][col] = Rook(row, col, 'w')
+                        elif self.pawn_promo == 'knight':
+                            self.board[row][col] = Knight(row, col, 'w')
+                        elif self.pawn_promo == 'bishop':
+                            self.board[row][col] = Bishop(row, col, 'w')
+                        self.board[row][col].white_pieces.append(self.board[row][col])
+                    elif self.board[r][c].colour == 'b':
+                        self.board[r][c].black_pieces.remove(self.board[r][c])
+                        self.board[r][c] = 0
+                        if self.pawn_promo == 'queen' or self.pawn_promo is None:
+                            self.board[row][col] = Queen(row, col, 'b')
+                        elif self.pawn_promo == 'rook':
+                            self.board[row][col] = Rook(row, col, 'b')
+                        elif self.pawn_promo == 'knight':
+                            self.board[row][col] = Knight(row, col, 'b')
+                        elif self.pawn_promo == 'bishop':
+                            self.board[row][col] = Bishop(row, col, 'b')
+                        self.board[row][col].black_pieces.append(self.board[row][col])
+                
+                    self.turn = 'w' if self.turn == 'b' else 'b'
+                    self.selected = []
             elif len(self.selected) == 1 and not self.occupied(row, col):
                 pass
             elif len(self.selected) == 1 and self.occupied(row, col):
@@ -172,5 +213,17 @@ class Board:
         self.board[r1][c1] = 0
         self.turn = 'w' if self.turn == 'b' else 'b'
 
+    def popup(self):
+        root = Tk()
+        root.overrideredirect(True)
 
-                
+        Button(root, text="QUEEN", padx=50, pady=30, command=lambda: self.click("queen", root)).grid(row=0, column=0)
+        Button(root, text="ROOK", padx=50, pady=30, command=lambda: self.click("rook", root)).grid(row=0, column=1)
+        Button(root, text="KNIGHT", padx=50, pady=30, command=lambda: self.click("knight", root)).grid(row=1, column=0)
+        Button(root, text="BISHOP", padx=50, pady=30, command=lambda: self.click("bishop", root)).grid(row=1, column=1)
+
+        root.mainloop()
+    
+    def click(self, str1, root):
+        root.destroy()
+        self.pawn_promo = str1
