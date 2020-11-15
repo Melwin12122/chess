@@ -483,7 +483,7 @@ class King(Piece):
 
         if self.colour == 'b':
             for wp in Piece.white_pieces:
-                if (self.row, self.col) in wp.move_list:
+                if (self.row, self.col) in wp.move_list or (wp.pawn and (self.row, self.col) in wp.specialmoves):
                     Piece.b_check = True
                     break
             else:
@@ -491,16 +491,20 @@ class King(Piece):
         
             if Piece.b_check and moves == []:
                 for bp in Piece.black_pieces:
-                    if bp.move_list == []:
-                        Piece.b_checkmate = True
+                    if bp.move_list != []:
+                        break
+                else:
+                    Piece.b_checkmate = True
 
             if not Piece.b_check and moves == []:
                 for bp in Piece.black_pieces:
-                    if bp.move_list == []:
-                        Piece.b_stalemate = True
+                    if bp.move_list != []:
+                        break
+                else:
+                    Piece.b_stalemate = True
         elif self.colour == 'w':
             for bp in Piece.black_pieces:
-                if (self.row, self.col) in bp.move_list:
+                if (self.row, self.col) in bp.move_list or (bp.pawn and (self.row, self.col) in bp.specialmoves):
                     Piece.w_check = True
                     break
             else:
@@ -508,13 +512,17 @@ class King(Piece):
                 
                 if Piece.w_check and moves == []:
                     for wp in Piece.white_pieces:
-                        if wp.move_list == []:
-                            Piece.w_checkmate = True
+                        if wp.move_list != []:
+                            break
+                    else:
+                        Piece.w_checkmate = True
                 
                 if not Piece.w_check and moves == []:
                     for wp in Piece.white_pieces:
-                        if wp.move_list == []:
-                            Piece.w_stalemate = True
+                        if wp.move_list != []:
+                            break
+                    else:
+                        Piece.w_stalemate = True
 
         self.move_list = moves
         self.possible_move = temp
@@ -532,6 +540,9 @@ class King(Piece):
                         return False
                     if (r, c) == (bp.row+1, bp.col):
                         return True
+
+                if (r, c) in bp.move_list:
+                    return False
                 
                 pos = self.find_pos(bp, (r, c))
                 if (self.row, self.col) in pos:
@@ -555,6 +566,9 @@ class King(Piece):
                         return False
                     if (r, c) == (wp.row-1, wp.col):
                         return True
+
+                if (r, c) in wp.move_list:
+                    return False
 
                 pos = self.find_pos(wp, (r, c))
                 if (self.row, self.col) in pos:

@@ -1,5 +1,5 @@
 import pygame
-from chess.constants import WIDTH, HEIGHT, CELL_SIZE
+from chess.constants import WIDTH, HEIGHT, CELL_SIZE, BLACK
 from chess.board import Board
 
 pygame.init()
@@ -13,8 +13,10 @@ clock.tick(FPS)
 
 board = Board()
 
+done = None
+
 def main():
-    global board, WIN
+    global board, WIN, done
     running = True
     
     while running:
@@ -27,7 +29,10 @@ def main():
                 row = pos[1] // CELL_SIZE
                 board.select(row, col)
         
-        board.draw(WIN)
+        if done is None:
+            done = board.draw(WIN)
+        if done == 'cm' or done == 'sm':
+            WIN.fill(BLACK)
     
         pygame.display.update()
 

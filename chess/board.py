@@ -75,13 +75,44 @@ class Board:
                     if self.board[row][col].king:
                         if self.board[row][col].colour == 'b' and self.board[row][col].b_check:
                             pygame.draw.rect(win, BLUE, (CELL_SIZE * col, CELL_SIZE * row, CELL_SIZE, CELL_SIZE))
+                            if self.board[row][col].b_checkmate:
+                                self.checkmate("White")
+                                return 'cm'
                         elif self.board[row][col].colour == 'w' and self.board[row][col].w_check:
                             pygame.draw.rect(win, BLUE, (CELL_SIZE * col, CELL_SIZE * row, CELL_SIZE, CELL_SIZE))
+                            if self.board[row][col].w_checkmate:
+                                self.checkmate("Black")
+                                return 'cm'
+                        if self.board[row][col].colour == 'b':
+                            if self.board[row][col].b_stalemate:
+                                self.stalemate()
+                                return 'sm'
+                        elif self.board[row][col].colour == 'w':
+                            if self.board[row][col].w_stalemate:
+                                self.stalemate()
+                                return 'sm'
                     self.board[row][col].draw(win)
                     self.board[row][col].valid_moves(self.board)
                 pygame.draw.rect(win, BLACK, (CELL_SIZE * col, CELL_SIZE * row, CELL_SIZE, CELL_SIZE), 2) # border
                     
-  
+    
+    def checkmate(self, winner):
+        root = Tk()
+
+        Label(text="CHECKMATE").grid(row=0, column=0)
+        Label(text=f"{winner} wins!").grid(row=1, column=0)
+
+        root.mainloop()
+
+    def stalemate(self):
+        root = Tk()
+
+        Label(text="STALEMATE").grid(row=0, column=0)
+        Label(text="DRAW!").grid(row=1, column=0)
+
+        root.mainloop()
+    
+
     def select(self, row, col):
         # UNSELECT and same team selection
         if self.board[row][col] != 0 or self.selected != []:
