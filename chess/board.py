@@ -190,6 +190,8 @@ class Board:
                             self.board[row][col] = Knight(row, col, 'w')
                         elif self.pawn_promo == 'bishop':
                             self.board[row][col] = Bishop(row, col, 'w')
+                        self.turn = 'w' if self.turn == 'b' else 'b'
+                        self.selected = []
                     elif self.board[r][c].colour == 'b':
                         self.board[r][c].black_pieces.remove(self.board[r][c])
                         self.board[r][c] = 0
@@ -201,6 +203,8 @@ class Board:
                             self.board[row][col] = Knight(row, col, 'b')
                         elif self.pawn_promo == 'bishop':
                             self.board[row][col] = Bishop(row, col, 'b')
+                        self.turn = 'w' if self.turn == 'b' else 'b'
+                        self.selected = []
                 elif (row, col) in self.board[r][c].specialmoves:
                     if self.board[r][c].colour == 'b':
                         self.board[row-1][col].row = self.board[row-1][col].col = None
@@ -214,9 +218,9 @@ class Board:
                     self.board[r][c] = 0
                     self.board[row][col].row = row
                     self.board[row][col].col = col 
-                
                     self.turn = 'w' if self.turn == 'b' else 'b'
                     self.selected = []
+                
             elif len(self.selected) == 1 and not self.occupied(row, col):
                 pass
             if len(self.selected) == 1 and self.occupied(row, col):
