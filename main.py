@@ -14,7 +14,7 @@ pygame.display.set_caption("Chess")
 clock = pygame.time.Clock()
 clock.tick(FPS)
 
-board = Board()
+
 
 done = None
 events = None
@@ -49,9 +49,9 @@ def quit_game():
     sys.exit()
 
 def main():
-    global board, WIN, done, events
+    global WIN, done, events
     running = True
-    
+    board = Board()
     while running:
         events = pygame.event.get()
         for event in events:
@@ -60,15 +60,19 @@ def main():
                 quit_game()
             if event.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
-                col = pos[0] // CELL_SIZE
-                row = pos[1] // CELL_SIZE
-                board.select(row, col)
+                if pos[1] <= HEIGHT - 58:
+                    col = pos[0] // CELL_SIZE
+                    row = pos[1] // CELL_SIZE
+                    board.select(row, col)
         
         if done is None:
             done = board.draw(WIN)
         if done == 'cm' or done == 'sm':
             menu()
-    
+
+        pygame.draw.rect(WIN, BLACK, (0, HEIGHT-58, WIDTH, 58))
+        button("Play again", WIDTH-120, HEIGHT-54, 100, 50, GREEN, RED, action=main)
+
         pygame.display.update()
 
 
@@ -82,13 +86,12 @@ def menu():
         for event in events:
             if event.type == pygame.QUIT:
                 running = False
-                pygame.quit()
-                sys.exit()
+                quit_game()
 
         WIN.fill(BLACK)
 
         button("Start", (WIDTH//2)-50, (HEIGHT//2)-60, 100, 50, RED, GREEN, action=main)
-        button("Exit", (WIDTH//2)-50, (HEIGHT//2)+60, 100, 50, RED, GREEN, action=quit_game)
+        button("Exit", (WIDTH//2)-50, (HEIGHT//2)+60, 100, 50, GREEN, RED, action=quit_game)
 
         pygame.display.update()
 
