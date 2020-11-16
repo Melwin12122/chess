@@ -139,12 +139,14 @@ class Board:
                             self.board[7][6].col = 6
                             self.board[7][5].col = 5
                             self.board[7][6].castled = True
+                            self.board[7][5].moved = self.board[7][6].moved = True
                         elif self.board[r][c].colour == 'b':
                             self.board[0][6] = self.board[0][4]
                             self.board[0][5] = self.board[0][7]
                             self.board[0][4] = self.board[0][7] = 0
                             self.board[0][6].col = 6
                             self.board[0][5].col = 5
+                            self.board[0][6].moved = self.board[0][5].moved = True
                             self.board[0][6].castled = True
                     elif col < c:
                         if self.board[r][c].colour == 'w':
@@ -154,6 +156,7 @@ class Board:
                             self.board[7][2].col = 2
                             self.board[7][3].col = 3
                             self.board[7][2].castled = True
+                            self.board[7][2].moved = self.board[7][3].moved = True
                         elif self.board[r][c].colour == 'b':
                             self.board[0][2] = self.board[0][4]
                             self.board[0][3] = self.board[0][0]
@@ -161,6 +164,7 @@ class Board:
                             self.board[0][2].col = 2
                             self.board[0][3].col = 3
                             self.board[0][2].castled = True
+                            self.board[0][2].moved = self.board[0][3].moved = True
                     self.turn = 'w' if self.turn == 'b' else 'b'
                     self.selected = []
             elif len(self.selected) == 1 and self.board[self.selected[0][0]][self.selected[0][1]].pawn:
@@ -220,9 +224,6 @@ class Board:
             self.board[r2][c2].row = None
             self.board[r2][c2].col = None
 
-        if self.board[r1][c1].pawn:
-            self.board[r1][c1].first_move = False
-
         self.board[r1][c1].row = r2
         self.board[r1][c1].col = c2
 
@@ -234,6 +235,7 @@ class Board:
                     
         self.board[r2][c2] = self.board[r1][c1]
         self.board[r1][c1] = 0
+        self.board[r2][c2].moved = True
         self.turn = 'w' if self.turn == 'b' else 'b'
 
     def popup(self):

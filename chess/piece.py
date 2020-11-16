@@ -20,10 +20,12 @@ class Piece:
         self.colour = colour
         self.img = None
         self.king = False
+        self.queen = False
         self.pawn = False
         self.knight = False
         self.rook = False
         self.bishop = False
+        self.moved = False
         self.move_list = [] # Moves which could be moved
         self.possible_move = [] # Moves beyond opponent piece
         self.saving_move = [] # Moves which could backup a same piece
@@ -345,6 +347,7 @@ class Rook(Piece):
 class Queen(Piece):
     def __init__(self, row, col, colour):
         super().__init__(row, col, colour)
+        self.queen = True
         self.img = pygame.transform.scale(pygame.image.load(os.path.join("imgs" , colour + "Q.png")), (CELL_SIZE, CELL_SIZE))
 
     def valid_moves(self, board):
@@ -434,16 +437,16 @@ class King(Piece):
             else:
                 temp.append((r+1, c+1))
 
-        if self.colour == 'w' and (self.row, self.col) == (7, 4) and not self.castled:
+        if self.colour == 'w' and not self.moved and not self.castled and not Piece.w_check:
             for wp in Piece.white_pieces:
-                if wp.rook:
+                if wp.rook and not wp.moved:
                     if (wp.row, wp.col) == (7, 7):
                         for i in range(5, 7):
                             if board[7][i] != 0:
                                 break
                         else:
                             for bp in Piece.black_pieces:
-                                if (7, 6) in bp.move_list:
+                                if (7, 6) in bp.move_list or (7, 5) in bp.move_list:
                                     break
                             else:
                                 temp2.append((7, 6))
@@ -453,20 +456,20 @@ class King(Piece):
                                 break
                         else:
                             for bp in Piece.black_pieces:
-                                if (7, 2) in bp.move_list:
+                                if (7, 2) in bp.move_list or (7, 3) in bp.move_list:
                                     break
                             else:
                                 temp2.append((7, 2))
-        elif self.colour == 'b' and (self.row, self.col) == (0, 4) and not self.castled:
+        elif self.colour == 'b' and not self.moved and not self.castled and not Piece.b_check:
             for wp in Piece.white_pieces:
-                if wp.rook:
+                if wp.rook and not wp.moved:
                     if (wp.row, wp.col) == (0, 7):
                         for i in range(5, 7):
                             if board[0][i] != 0:
                                 break
                         else:
                             for wp in Piece.white_pieces:
-                                if (0, 6) in wp.move_list:
+                                if (0, 6) in wp.move_list or (0, 5) in wp.move_list:
                                     break
                             else:
                                 temp2.append((0, 6))
@@ -476,7 +479,7 @@ class King(Piece):
                                 break
                         else:
                             for wp in Piece.white_pieces:
-                                if (0, 2) in wp.move_list:
+                                if (0, 2) in wp.move_list or (0, 3) in wp.move_list:
                                     break
                             else:
                                 temp2.append((0, 2))
@@ -586,27 +589,28 @@ class King(Piece):
         moves = []
         row = other[0]
         col = other[1]
-        if one.row == row:
-            incr = -1 if col > one.col else 1
-            for i in range(col+incr, one.col, incr):
-                moves.append((one.row, i))
-        elif one.col == col:
-            incr = -1 if row > one.row else 1
-            for i in range(row+incr, one.row, incr):
-                moves.append((i, one.col))
-        elif abs(one.row - row) == abs(one.col - col):
-            r= r_incr = -1 if row > one.row else 1
-            c= c_incr = -1 if col > one.col else 1
-            if col < one.col:
-                for i in range(col+1, one.col):
-                    moves.append((row+r_incr, col+c_incr))
-                    r_incr += r
-                    c_incr += c
-            elif col > one.col:
-                for i in range(one.col+1, col):
-                    moves.append((row+r_incr, col+c_incr))
-                    r_incr += r
-                    c_incr += c
+        if one.queen or one.rook or one.bishop:
+            if one.row == row:
+                incr = -1 if col > one.col else 1
+                for i in range(col+incr, one.col, incr):
+                    moves.append((one.row, i))
+            elif one.col == col:
+                incr = -1 if row > one.row else 1
+                for i in range(row+incr, one.row, incr):
+                    moves.append((i, one.col))
+            elif abs(one.row - row) == abs(one.col - col):
+                r= r_incr = -1 if row > one.row else 1
+                c= c_incr = -1 if col > one.col else 1
+                if col < one.col:
+                    for i in range(col+1, one.col):
+                        moves.append((row+r_incr, col+c_incr))
+                        r_incr += r
+                        c_incr += c
+                elif col > one.col:
+                    for i in range(one.col+1, col):
+                        moves.append((row+r_incr, col+c_incr))
+                        r_incr += r
+                        c_incr += c
         return moves
 
         
@@ -717,7 +721,6 @@ class Bishop(Piece):
 class Pawn(Piece):
     def __init__(self, row, col, colour):
         super().__init__(row, col, colour)
-        self.first_move = True
         self.pawn = True
         self.specialmoves = []
         self.img = pygame.transform.scale(pygame.image.load(os.path.join("imgs" , colour + "P.png")), (CELL_SIZE, CELL_SIZE))
@@ -731,7 +734,7 @@ class Pawn(Piece):
         temp3 = []
 
         if self.colour == 'w':
-            if self.first_move:
+            if not self.moved:
                 for i in range(1, 3):
                     if board[r-i][c] != 0:
                         break
@@ -770,7 +773,7 @@ class Pawn(Piece):
                         temp2.append((r-1, c+1))
 
         elif self.colour == 'b':
-            if self.first_move:
+            if not self.moved:
                 for i in range(1, 3):
                     if board[r+i][c] != 0:
                         break
