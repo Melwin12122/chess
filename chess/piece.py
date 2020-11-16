@@ -723,6 +723,7 @@ class Pawn(Piece):
         super().__init__(row, col, colour)
         self.pawn = True
         self.specialmoves = []
+        self.enpassant = False
         self.img = pygame.transform.scale(pygame.image.load(os.path.join("imgs" , colour + "P.png")), (CELL_SIZE, CELL_SIZE))
 
 
@@ -771,6 +772,9 @@ class Pawn(Piece):
                         temp2.append((r-1, c-1))
                     if r >= 1 and c<= 6 and board[r-1][c+1] != 0 and board[r-1][c+1].colour == self.colour:
                         temp2.append((r-1, c+1))
+                    for bp in Piece.black_pieces:
+                        if bp.pawn and bp.row == self.row and abs(self.col - bp.col) == 1 and bp.enpassant:
+                            temp3.append((self.row-1, bp.col))
 
         elif self.colour == 'b':
             if not self.moved:
@@ -809,7 +813,11 @@ class Pawn(Piece):
                         temp2.append((r+1, c-1))
                     if r <= 6 and c<= 6 and board[r+1][c+1] != 0 and board[r+1][c+1].colour == self.colour:
                         temp2.append((r+1, c+1))
-        
+                    for wp in Piece.white_pieces:
+                        if wp.pawn  and wp.row == self.row and abs(self.col - wp.col) == 1 and wp.enpassant:
+                            temp3.append((self.row+1, wp.col))
+                    
+
         temp4 = self.check_moves(moves)
 
         value, pos = self.cause_check(moves)
@@ -824,4 +832,3 @@ class Pawn(Piece):
 
         self.saving_move = temp2
         self.specialmoves = temp3
-        

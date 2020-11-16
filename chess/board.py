@@ -170,7 +170,7 @@ class Board:
             elif len(self.selected) == 1 and self.board[self.selected[0][0]][self.selected[0][1]].pawn:
                 r = self.selected[0][0]
                 c = self.selected[0][1]
-                if (row, col) in self.board[r][c].specialmoves:
+                if (row, col) in self.board[r][c].specialmoves and (r == 1 or r == 6):
                     self.board[r][c].row = self.board[r][c].col = None
                     self.popup()
                     if self.board[row][col] != 0:
@@ -201,6 +201,19 @@ class Board:
                             self.board[row][col] = Knight(row, col, 'b')
                         elif self.pawn_promo == 'bishop':
                             self.board[row][col] = Bishop(row, col, 'b')
+                elif (row, col) in self.board[r][c].specialmoves:
+                    if self.board[r][c].colour == 'b':
+                        self.board[row-1][col].row = self.board[row-1][col].col = None
+                        self.board[row-1][col].white_pieces.remove(self.board[row-1][col])
+                        self.board[row-1][col] = 0
+                    elif self.board[r][c].colour == 'w':
+                        self.board[row+1][col].row = self.board[row+1][col].col = None
+                        self.board[row+1][col].black_pieces.remove(self.board[row+1][col])
+                        self.board[row+1][col] = 0
+                    self.board[row][col] = self.board[r][c]
+                    self.board[r][c] = 0
+                    self.board[row][col].row = row
+                    self.board[row][col].col = col 
                 
                     self.turn = 'w' if self.turn == 'b' else 'b'
                     self.selected = []
@@ -238,8 +251,23 @@ class Board:
         self.board[r2][c2].moved = True
         self.turn = 'w' if self.turn == 'b' else 'b'
 
+        if self.board[r2][c2].pawn:
+            if abs(r2 - r1) == 2:
+                self.board[r2][c2].enpassant = True
+    
+
+        for bp in self.board[r2][c2].black_pieces:
+            if bp.pawn and bp is not self.board[r2][c2]:
+                bp.enpassant = False
+
+        for wp in self.board[r2][c2].white_pieces:
+            if wp.pawn and wp is not self.board[r2][c2]:
+                wp.enpassant = False
+
+
     def popup(self):
         root = Tk()
+
         root.overrideredirect(True)
 
         Button(root, text="QUEEN", padx=50, pady=30, command=lambda: self.click("queen", root)).grid(row=0, column=0)
