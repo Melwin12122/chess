@@ -1,7 +1,7 @@
 import pygame
 from .constants import ROWS, COLS, CELL_SIZE, BLACK, WHITE, BROWN, RED, YELLOW, BLUE, PURPLE
 from .piece import Rook, King, Queen, Bishop, Pawn, Knight
-from tkinter import *
+from tkinter import Tk, Label, Button
 
 class Board:
     
@@ -274,10 +274,11 @@ class Board:
 
         root.overrideredirect(True)
 
-        Button(root, text="QUEEN", padx=50, pady=30, command=lambda: self.click("queen", root)).grid(row=0, column=0)
-        Button(root, text="ROOK", padx=50, pady=30, command=lambda: self.click("rook", root)).grid(row=0, column=1)
-        Button(root, text="KNIGHT", padx=50, pady=30, command=lambda: self.click("knight", root)).grid(row=1, column=0)
-        Button(root, text="BISHOP", padx=50, pady=30, command=lambda: self.click("bishop", root)).grid(row=1, column=1)
+        Label(root, text="Choose one!").grid(row=0, column=0, columnspan=2)
+        Button(root, text="QUEEN", padx=50, pady=30, command=lambda: self.click("queen", root)).grid(row=1, column=0)
+        Button(root, text="ROOK", padx=50, pady=30, command=lambda: self.click("rook", root)).grid(row=1, column=1)
+        Button(root, text="KNIGHT", padx=50, pady=30, command=lambda: self.click("knight", root)).grid(row=2, column=0)
+        Button(root, text="BISHOP", padx=50, pady=30, command=lambda: self.click("bishop", root)).grid(row=2, column=1)
 
         root.mainloop()
     
