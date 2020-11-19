@@ -589,28 +589,28 @@ class King(Piece):
         moves = []
         row = other[0]
         col = other[1]
-        if one.queen or one.rook or one.bishop:
-            if one.row == row:
-                incr = -1 if col > one.col else 1
-                for i in range(col+incr, one.col, incr):
-                    moves.append((one.row, i))
-            elif one.col == col:
-                incr = -1 if row > one.row else 1
-                for i in range(row+incr, one.row, incr):
-                    moves.append((i, one.col))
-            elif abs(one.row - row) == abs(one.col - col):
-                r= r_incr = -1 if row > one.row else 1
-                c= c_incr = -1 if col > one.col else 1
-                if col < one.col:
-                    for i in range(col+1, one.col):
-                        moves.append((row+r_incr, col+c_incr))
-                        r_incr += r
-                        c_incr += c
-                elif col > one.col:
-                    for i in range(one.col+1, col):
-                        moves.append((row+r_incr, col+c_incr))
-                        r_incr += r
-                        c_incr += c
+        
+        if one.row == row and (one.rook or one.queen):
+            incr = -1 if col > one.col else 1
+            for i in range(col+incr, one.col, incr):
+                moves.append((one.row, i))
+        elif one.col == col and (one.rook and one.queen):
+            incr = -1 if row > one.row else 1
+            for i in range(row+incr, one.row, incr):
+                moves.append((i, one.col))
+        elif abs(one.row - row) == abs(one.col - col) and (one.bishop or one.queen):
+            r= r_incr = -1 if row > one.row else 1
+            c= c_incr = -1 if col > one.col else 1
+            if col < one.col:
+                for i in range(col+1, one.col):
+                    moves.append((row+r_incr, col+c_incr))
+                    r_incr += r
+                    c_incr += c
+            elif col > one.col:
+                for i in range(one.col+1, col):
+                    moves.append((row+r_incr, col+c_incr))
+                    r_incr += r
+                    c_incr += c
         return moves
 
         
