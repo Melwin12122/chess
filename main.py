@@ -3,6 +3,7 @@ from chess.constants import WIDTH, HEIGHT, CELL_SIZE, BLACK, button_font, RED, G
 from chess.board import Board
 import sys
 
+# hello
 pygame.init()
 
 
