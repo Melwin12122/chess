@@ -146,8 +146,11 @@ class Piece:
             else:
                 if board[r][c] == 0:
                     temp.append((r, c))
-                else:
+                elif board[r][c].colour != self.colour:
                     temp.append((r, c))
+                    break
+                elif board[r][c].colour == self.colour and board[r+1][c].king:
+                    temp2.append((r, c))
                     break
         
         r = self.row
@@ -168,8 +171,11 @@ class Piece:
             else:
                 if board[r][c] == 0:
                     temp.append((r, c))
-                else:
+                elif board[r][c].colour != self.colour:
                     temp.append((r, c))
+                    break
+                elif board[r][c].colour == self.colour and board[r-1][c].king:
+                    temp2.append((r, c))
                     break
 
         r = self.row
@@ -191,8 +197,11 @@ class Piece:
             else:
                 if board[r][c] == 0:
                     temp.append((r, c))
-                else:
+                elif board[r][c].colour != self.colour:
                     temp.append((r, c))
+                    break
+                elif board[r][c].colour == self.colour and board[r][c+1].king:
+                    temp2.append((r, c))
                     break
         
         c = self.col
@@ -213,8 +222,11 @@ class Piece:
             else:
                 if board[r][c] == 0:
                     temp.append((r, c))
-                else:
+                elif board[r][c].colour != self.colour:
                     temp.append((r, c))
+                    break
+                elif board[r][c].colour == self.colour and board[r][c-1].king:
+                    temp2.append((r, c))
                     break
 
     def move_diagonal(self, board, moves, temp, temp2):
@@ -242,8 +254,12 @@ class Piece:
             elif lc >= 0 and Lbeyond:
                 if board[r][lc] == 0:
                     temp.append((r, lc))
-                else:
+                elif board[r][lc].colour != self.colour:
                     temp.append((r, lc))
+                    lc = -1
+                    Lbeyond = False
+                elif board[r][lc].colour == self.colour and board[r+1][lc+1].king:
+                    temp2.append((r, lc))
                     lc = -1
                     Lbeyond = False
 
@@ -261,8 +277,12 @@ class Piece:
             elif rc <= 7 and Rbeyond:
                 if board[r][rc] == 0:
                     temp.append((r, rc))
-                else:
+                elif board[r][rc].colour != self.colour:
                     temp.append((r, rc))
+                    rc = 8
+                    Rbeyond = False
+                elif board[r][rc].colour == self.colour and board[r+1][rc-1].king:
+                    temp2.append((r, rc))
                     rc = 8
                     Rbeyond = False
 
@@ -290,8 +310,12 @@ class Piece:
             elif lc >= 0 and Lbeyond:
                 if board[r][lc] == 0:
                     temp.append((r, lc))
-                else:
+                elif board[r][lc].colour != self.colour:
                     temp.append((r, lc))
+                    lc = -1
+                    Lbeyond = False
+                elif board[r][lc].colour == self.colour and board[r-1][lc+1].king:
+                    temp2.append((r, lc))
                     lc = -1
                     Lbeyond = False
 
@@ -309,8 +333,12 @@ class Piece:
             elif rc <= 7 and not  Rbeyond:
                 if board[r][rc] == 0:
                     temp.append((r, rc))
-                else:
+                elif board[r][rc].colour != self.colour:
                     temp.append((r, rc))
+                    rc = 8
+                    Rbeyond = False
+                elif board[r][rc].colour == self.colour and board[r-1][rc-1].king:
+                    temp2.append((r, rc))
                     rc = 8
                     Rbeyond = False
 
