@@ -16,7 +16,6 @@ clock = pygame.time.Clock()
 clock.tick(FPS)
 
 
-done = None
 events = None
 
 def text_objects(text, font, colour, pos):
@@ -51,7 +50,9 @@ def quit_game():
 def main():
     global WIN, done, events
     running = True
+    done = None
     board = Board()
+    
     while running:
         events = pygame.event.get()
         for event in events:
@@ -80,6 +81,7 @@ def main():
 def menu():
     global WIN, events
     running = True
+    done = None
 
     while running:
         events = pygame.event.get()
