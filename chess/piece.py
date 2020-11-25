@@ -544,19 +544,19 @@ class King(Piece):
             else:
                 Piece.w_check = False
                 
-                if Piece.w_check and moves == []:
-                    for wp in Piece.white_pieces:
-                        if wp.move_list != []:
-                            break
-                    else:
-                        Piece.w_checkmate = True
-                
-                if not Piece.w_check and moves == [] and turn == self.colour:
-                    for wp in Piece.white_pieces:
-                        if wp.move_list != []:
-                            break
-                    else:
-                        Piece.w_stalemate = True
+            if Piece.w_check and moves == []:
+                for wp in Piece.white_pieces:
+                    if wp.move_list != []:
+                        break
+                else:
+                    Piece.w_checkmate = True
+            
+            if not Piece.w_check and moves == [] and turn == self.colour:
+                for wp in Piece.white_pieces:
+                    if wp.move_list != []:
+                        break
+                else:
+                    Piece.w_stalemate = True
 
         self.move_list = moves
         self.possible_move = temp
