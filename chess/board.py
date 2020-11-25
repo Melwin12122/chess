@@ -93,7 +93,10 @@ class Board:
                                 self.stalemate()
                                 return 'sm'
                     self.board[row][col].draw(win)
-                    self.board[row][col].valid_moves(self.board)
+                    if self.board[row][col].king:
+                        self.board[row][col].valid_moves(self.board, self.turn)
+                    else:
+                        self.board[row][col].valid_moves(self.board)
                 pygame.draw.rect(win, BLACK, (CELL_SIZE * col, CELL_SIZE * row, CELL_SIZE, CELL_SIZE), 2) # border
                     
     

@@ -3,7 +3,6 @@ from chess.constants import WIDTH, HEIGHT, CELL_SIZE, BLACK, button_font, RED, G
 from chess.board import Board
 import sys
 
-# hello
 pygame.init()
 
 
@@ -34,7 +33,6 @@ def button(text, x, y, w, h, colour, active_colour, action=None):
         for event in events:
             if event.type == pygame.MOUSEBUTTONUP and action is not None:
                 action()
-                return True # Button pressed
 
     else:
         pygame.draw.rect(WIN, colour, (x, y, w, h))

@@ -3,7 +3,6 @@ import os
 from .constants import CELL_SIZE
 
 
-
 class Piece:
     newGame = True
 
@@ -413,7 +412,7 @@ class King(Piece):
         self.specialmoves = []
         self.img = pygame.transform.scale(pygame.image.load(os.path.join("imgs" , colour + "K.png")), (CELL_SIZE, CELL_SIZE))
 
-    def valid_moves(self, board):
+    def valid_moves(self, board, turn):
         r = self.row
         c = self.col 
         moves = []
@@ -531,7 +530,7 @@ class King(Piece):
                 else:
                     Piece.b_checkmate = True
 
-            if not Piece.b_check and moves == []:
+            if not Piece.b_check and moves == [] and turn == self.colour:
                 for bp in Piece.black_pieces:
                     if bp.move_list != []:
                         break
@@ -552,7 +551,7 @@ class King(Piece):
                     else:
                         Piece.w_checkmate = True
                 
-                if not Piece.w_check and moves == []:
+                if not Piece.w_check and moves == [] and turn == self.colour:
                     for wp in Piece.white_pieces:
                         if wp.move_list != []:
                             break
