@@ -579,7 +579,7 @@ class King(Piece):
                 if (self.row, self.col) in pos:
                     return False
         
-                if Piece.w_check and (r, c) in bp.move_list:
+                if Piece.w_check and (r, c) in bp.possible_move:
                     return False
                 if (r, c) == (bp.row, bp.col):
                     for bp2 in Piece.black_pieces:
@@ -605,7 +605,7 @@ class King(Piece):
                 if (self.row, self.col) in pos:
                     return False
 
-                if Piece.b_check and (r, c) in wp.move_list:
+                if Piece.b_check and (r, c) in wp.possible_move:
                     return False 
                 if (r, c) == (wp.row, wp.col):
                     for wp2 in Piece.white_pieces:
