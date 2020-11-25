@@ -149,7 +149,7 @@ class Piece:
                 elif board[r][c].colour != self.colour:
                     temp.append((r, c))
                     break
-                elif board[r][c].colour == self.colour and board[r+1][c].king:
+                elif board[r][c].colour == self.colour and board[r+1][c] != 0 and board[r+1][c].king:
                     temp2.append((r, c))
                     break
         
@@ -174,7 +174,7 @@ class Piece:
                 elif board[r][c].colour != self.colour:
                     temp.append((r, c))
                     break
-                elif board[r][c].colour == self.colour and board[r-1][c].king:
+                elif board[r][c].colour == self.colour and board[r-1][c] != 0 and board[r-1][c].king:
                     temp2.append((r, c))
                     break
 
@@ -200,7 +200,7 @@ class Piece:
                 elif board[r][c].colour != self.colour:
                     temp.append((r, c))
                     break
-                elif board[r][c].colour == self.colour and board[r][c+1].king:
+                elif board[r][c].colour == self.colour and board[r][c+1] != 0 and board[r][c+1].king:
                     temp2.append((r, c))
                     break
         
@@ -225,7 +225,7 @@ class Piece:
                 elif board[r][c].colour != self.colour:
                     temp.append((r, c))
                     break
-                elif board[r][c].colour == self.colour and board[r][c-1].king:
+                elif board[r][c].colour == self.colour and board[r][c-1] != 0 and board[r][c-1].king:
                     temp2.append((r, c))
                     break
 
@@ -258,7 +258,7 @@ class Piece:
                     temp.append((r, lc))
                     lc = -1
                     Lbeyond = False
-                elif board[r][lc].colour == self.colour and board[r+1][lc+1].king:
+                elif board[r][lc].colour == self.colour and board[r+1][lc+1] != 0 and board[r+1][lc+1].king:
                     temp2.append((r, lc))
                     lc = -1
                     Lbeyond = False
@@ -281,7 +281,7 @@ class Piece:
                     temp.append((r, rc))
                     rc = 8
                     Rbeyond = False
-                elif board[r][rc].colour == self.colour and board[r+1][rc-1].king:
+                elif board[r][rc].colour == self.colour and board[r+1][rc-1] != 0 and board[r+1][rc-1].king:
                     temp2.append((r, rc))
                     rc = 8
                     Rbeyond = False
@@ -314,7 +314,7 @@ class Piece:
                     temp.append((r, lc))
                     lc = -1
                     Lbeyond = False
-                elif board[r][lc].colour == self.colour and board[r-1][lc+1].king:
+                elif board[r][lc].colour == self.colour and board[r-1][lc+1] != 0 and board[r-1][lc+1].king:
                     temp2.append((r, lc))
                     lc = -1
                     Lbeyond = False
@@ -337,7 +337,7 @@ class Piece:
                     temp.append((r, rc))
                     rc = 8
                     Rbeyond = False
-                elif board[r][rc].colour == self.colour and board[r-1][rc-1].king:
+                elif board[r][rc].colour == self.colour and board[r-1][rc-1] != 0 and board[r-1][rc-1].king:
                     temp2.append((r, rc))
                     rc = 8
                     Rbeyond = False
