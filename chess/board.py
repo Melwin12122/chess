@@ -1,6 +1,6 @@
 import pygame
 from .constants import ROWS, COLS, CELL_SIZE, BLACK, WHITE, BROWN, RED, YELLOW, BLUE, PURPLE
-from .piece import Rook, King, Queen, Bishop, Pawn, Knight
+from .piece import Rook, King, Queen, Bishop, Pawn, Knight, Piece
 from tkinter import Tk, Label, Button
 
 class Board:
@@ -9,6 +9,7 @@ class Board:
         self.board = [[0 for _ in range(COLS)] for _ in range(ROWS)]
         self.selected = []
         self.turn = 'w'
+        Piece.newGame = True
 
         self.board[0][0] = Rook(0, 0, "b")
         self.board[0][1] = Knight(0, 1, "b")

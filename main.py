@@ -52,7 +52,7 @@ def main():
     running = True
     done = None
     board = Board()
-    
+
     while running:
         events = pygame.event.get()
         for event in events:
@@ -68,7 +68,8 @@ def main():
         
         if done is None:
             done = board.draw(WIN)
-        if done == 'cm' or done == 'sm':
+        elif done == 'cm' or done == 'sm':
+            running = False
             menu()
 
         pygame.draw.rect(WIN, BLACK, (0, HEIGHT-58, WIDTH, 58))

@@ -5,15 +5,7 @@ from .constants import CELL_SIZE
 
 
 class Piece:
-    black_pieces = []
-    white_pieces = []
-    b_check = False
-    w_check = False
-    b_checkmate = False
-    w_checkmate = False
-    b_stalemate = False
-    w_stalemate = False
-    number = 0
+    newGame = True
 
     def __init__(self, row, col, colour):
         self.row = row
@@ -30,7 +22,7 @@ class Piece:
         self.move_list = [] # Moves which could be moved
         self.possible_move = [] # Moves beyond opponent piece
         self.saving_move = [] # Moves which could backup a same piece
-        if Piece.number >= 32:
+        if Piece.newGame:
             Piece.black_pieces = []
             Piece.white_pieces = []
             Piece.b_check = False
@@ -39,12 +31,12 @@ class Piece:
             Piece.w_checkmate = False
             Piece.b_stalemate = False
             Piece.w_stalemate = False
-            Piece.number = 0
+            Piece.newGame = False
+
         if self.colour == 'w':
             Piece.white_pieces.append(self)
         elif self.colour == 'b':
             Piece.black_pieces.append(self)
-        Piece.number += 1
 
     def draw(self, win):
         x = self.col * CELL_SIZE
