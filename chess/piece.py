@@ -489,9 +489,9 @@ class King(Piece):
                             else:
                                 temp2.append((7, 2))
         elif self.colour == 'b' and not self.moved and not self.castled and not Piece.b_check:
-            for wp in Piece.white_pieces:
-                if wp.rook and not wp.moved:
-                    if (wp.row, wp.col) == (0, 7):
+            for bp in Piece.black_pieces:
+                if bp.rook and not bp.moved:
+                    if (bp.row, bp.col) == (0, 7):
                         for i in range(5, 7):
                             if board[0][i] != 0:
                                 break
@@ -501,7 +501,7 @@ class King(Piece):
                                     break
                             else:
                                 temp2.append((0, 6))
-                    if (wp.row, wp.col) == (0, 0):
+                    if (bp.row, bp.col) == (0, 0):
                         for i in range(1, 4):
                             if board[0][i] != 0:
                                 break
@@ -580,7 +580,20 @@ class King(Piece):
                     return False
         
                 if Piece.w_check and (r, c) in bp.possible_move:
-                    return False
+                    if self.row == bp.row:
+                        incr = -1 if bp.col > self.col else 1
+                        if (r, c) == (self.row, self.col+incr):
+                            return False
+                    elif self.col == bp.col:
+                        incr = -1 if bp.row > self.row else 1
+                        if (r, c) == (self.row+incr, self.col):
+                            return False
+                    elif abs(self.row - bp.row) == abs(self.col - bp.col):
+                        c_incr = -1 if bp.col > self.col else 1
+                        r_incr = -1 if bp.row > self.row else 1
+                        if (r, c) == (self.row+r_incr, self.col+c_incr):
+                            return False
+
                 if (r, c) == (bp.row, bp.col):
                     for bp2 in Piece.black_pieces:
                         if (r, c) in bp2.saving_move:
@@ -606,7 +619,20 @@ class King(Piece):
                     return False
 
                 if Piece.b_check and (r, c) in wp.possible_move:
-                    return False 
+                    if self.row == wp.row:
+                        incr = -1 if wp.col > self.col else 1
+                        if (r, c) == (self.row, self.col+incr):
+                            return False
+                    elif self.col == wp.col:
+                        incr = -1 if wp.row > self.row else 1
+                        if (r, c) == (self.row+incr, self.col):
+                            return False
+                    elif abs(self.row - wp.row) == abs(self.col - wp.col):
+                        c_incr = -1 if wp.col > self.col else 1
+                        r_incr = -1 if wp.row > self.row else 1
+                        if (r, c) == (self.row+r_incr, self.col+c_incr):
+                            return False
+
                 if (r, c) == (wp.row, wp.col):
                     for wp2 in Piece.white_pieces:
                         if (r, c) in wp2.saving_move:
@@ -627,8 +653,8 @@ class King(Piece):
             for i in range(row+incr, one.row, incr):
                 moves.append((i, one.col))
         elif abs(one.row - row) == abs(one.col - col) and (one.bishop or one.queen):
-            r= r_incr = -1 if row > one.row else 1
-            c= c_incr = -1 if col > one.col else 1
+            r = r_incr = -1 if row > one.row else 1
+            c = c_incr = -1 if col > one.col else 1
             if col < one.col:
                 for i in range(col+1, one.col):
                     moves.append((row+r_incr, col+c_incr))
